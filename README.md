@@ -1,5 +1,9 @@
 # Nova — Enterprise AI Agent Platform
 
+<p align="center">
+  <img src="assets/demo.png" alt="Nova — Enterprise AI Agent Platform" width="100%">
+</p>
+
 **A local-first AI agent platform for enterprise support workflows, with read-only database access and human-approved actions.**
 
 Nova is a portfolio project exploring how to integrate a locally hosted language model into a structured enterprise workflow. It combines a conversational interface, controlled database queries, and an approval-based action lifecycle to demonstrate practical agent engineering beyond text generation.
