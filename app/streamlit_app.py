@@ -305,45 +305,40 @@ with chat_tab:
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
     user_prompt = st.chat_input("Message Nova...")
 
     if user_prompt:
-        st.session_state.messages.append(
-            {"role": "user", "content": user_prompt}
-        )
+        with st.spinner("Nova is thinking..."):
+            result, error = api_request(
+                "POST",
+                "/chat",
+                json={"message": user_prompt},
+            )
 
-        with st.chat_message("user"):
-            st.markdown(user_prompt)
-
-        with st.chat_message("assistant"):
-            with st.spinner("Nova is thinking..."):
-                result, error = api_request(
-                    "POST",
-                    "/chat",
-                    json={"message": user_prompt},
+            if error:
+                answer = (
+                    "I couldn't connect to the Nova API. "
+                    "Check that FastAPI is running."
+                )
+                st.error(error)
+            else:
+                answer = result.get(
+                    "response",
+                    "The API returned no response.",
                 )
 
-                if error:
-                    answer = (
-                        "I couldn't connect to the Nova API. "
-                        "Check that FastAPI is running."
-                    )
-                    st.error(error)
-                else:
-                    answer = result.get(
-                        "response",
-                        "The API returned no response.",
-                    )
-
-                st.markdown(answer)
-
-        st.session_state.messages.append(
-            {"role": "assistant", "content": answer}
+        st.session_state.messages.extend(
+            [
+                {"role": "user", "content": user_prompt},
+                {"role": "assistant", "content": answer},
+            ]
         )
+
+    messages = st.session_state.messages
+    for index in range(len(messages) - 2, -1, -2):
+        for message in messages[index:index + 2]:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
 
 # --------------------------------------------------
